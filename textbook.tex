@@ -1,0 +1,58 @@
+\documentclass[UTF8]{ctexart}
+\usepackage{amsmath}
+\usepackage{ltablex}
+\usepackage{tabularx}
+\usepackage{forloop}
+\usepackage{xstring}
+\usepackage{ifthen}
+\usepackage{calc}
+\usepackage{color}
+\usepackage[margin=1in]{geometry}
+
+% \usepackage{hyperref}
+% \hypersetup{pdftex,colorlinks=true,allcolors=blue}
+% \usepackage{hypcap}
+
+\usepackage[]{hyperref}
+\hypersetup{
+    pdftitle={FSI Cantonese - new format},
+    pdfauthor={Foreign Services Institute},
+    pdfsubject={FSI Cantonese},
+    bookmarksnumbered=true,
+    bookmarksopen=true,
+    bookmarksopenlevel=1,
+    % colorlinks=true,
+    pdfstartview=Fit,
+    pdfpagemode=UseOutlines,
+    pdfpagelayout=TwoPageRight
+}
+
+% Make font larger
+\setCJKmainfont[Scale=1.5]{STSong}
+
+% Input custom functions
+\input{functions.tex}
+
+\begin{document}
+
+\title{FSI Cantonese - new format}
+\author{Foreign Services Institute}
+
+\maketitle
+
+\tableofcontents
+
+\newpage
+Translator notes:
+\begin{itemize}
+    \item The original FSI cantonese uses yale romanization with 7 tones. This translation uses jyupting with 6 tones.
+    \item This is a work in progress
+\end{itemize}
+
+% Lesson 00
+\input{lessons/00/index.tex}
+
+% Lesson 01
+\input{lessons/01/index.tex}
+
+\end{document}

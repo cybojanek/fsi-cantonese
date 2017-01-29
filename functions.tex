@@ -1,0 +1,367 @@
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Jyutping formatting which takes as input a string like xxxxNxxxxN and produces
+% a string where the N are superscripted.
+% \jping{ji4gaa1}
+%
+% @param string of the format xxxxNxxxxN
+\newcounter{jpingStart}
+\newcounter{jpingEnd}
+\newcounter{jpingIndex}
+\newcounter{jpingLength}
+\newcounter{jpingLengthPlusOne}
+\newcommand{\jping}[1]{%
+    % NOTE: for single use, this would work, but we need to split...
+    % \StrGobbleRight{#1}{1}\textsuperscript{\StrRight{#1}{1}}%
+    % Get length of text
+    \StrLen{#1}[\jpingLength]%
+    \setcounter{jpingLengthPlusOne}{\jpingLength + 1}%
+    % Set start of text
+    \setcounter{jpingStart}{1}%
+    \setcounter{jpingEnd}{0}%
+    % Loop over each char
+    \forloop{jpingIndex}{1}{\value{jpingIndex} < \arabic{jpingLengthPlusOne}}{%
+        % Get char
+        \StrChar{#1}{\arabic{jpingIndex}}[\jpingChar]%
+        % If numeric, then handle
+        % NOTE: include 7 for high falling examples
+        \IfSubStr{1234567*}{\jpingChar}{%
+            \text{\textsuperscript{\jpingChar}}%
+        }{%
+            \text{\jpingChar}%
+        }%
+    }%
+}%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Variables for dtext
+\newcounter{dtextStart}
+\newcounter{dtextEnd}
+\newcounter{dtextIndex}
+\newcounter{dtextSubWordPlusOne}
+\newcounter{dtextLength}
+\newcounter{dtextLengthPlusOne}
+\newcounter{dtextSubWord}
+\newcounter{dtextNormal}
+
+% Double text, meaning cantonese characters on top, and jyutping ont he bottom.
+% The characters and jyutping will be grouped by spaces, with punctuation
+% (including chinese punctuation), correctly ignored and skipped. Uses \jping
+% for each jyutping group.
+%
+% Test cases
+% \dtext{而家 我 問 你，你 答 我。}{ji4gaa1 ngo5 man6 nei5 nei5 daap3 ngo5}\\
+% \dtext{而家 我 問 你，你 答 我。X}{ji4gaa1 ngo5 man6 nei5 nei5 daap3 ngo5 w}\\
+% \dtext{而家}{ji4gaa1}\\
+% \dtext{而家 我 問 你，你 答 我。a}{ji4gaa1 ngo5 man6 nei5 nei5 daap3 ngo5 -}\\
+% \dtext{而家 我 問 你，你 答 我。X b}{ji4gaa1 ngo5 man6 nei5 nei5 daap3 ngo5 w -}\\
+% \dtext{而家}{-}\\
+% \dtext{而家。。。}{ji4gaa1}\\
+% \dtext{而家 我 問 你，，你 答 我。。。}{ji4gaa1 ngo5 man6 nei5 nei5 daap3 ngo5}\\
+% TODO: Mode: top only, top and bottom, bottom only, top and bottom white
+%
+% @param cantonese characters
+% @param jyutping
+\newcommand{\dtext}[2]{%
+    % Get length of text
+    \StrLen{#1}[\dtextLength]%
+    \setcounter{dtextSubWord}{0}%
+    \setcounter{dtextNormal}{0}%
+    \setcounter{dtextLengthPlusOne}{\dtextLength + 1}%
+    % Count number of spaces
+    \StrCount{#2}{ }[\dtextSpaces]
+    % Set start of word
+    \setcounter{dtextStart}{1}%
+    \setcounter{dtextEnd}{0}%
+    % Loop over each char
+    \forloop{dtextIndex}{1}{\value{dtextIndex} < \arabic{dtextLengthPlusOne}}{%
+        % Get char
+        \StrChar{#1}{\arabic{dtextIndex}}[\dtextChar]%
+        % If special, then handle
+        % https://en.wikipedia.org/wiki/Chinese_punctuation
+        \IfSubStr{ 。「」﹁﹂"、‧《》〈〉﹏…——～,?;，!}{\dtextChar}{%
+            % End of word
+            \StrMid{#1}{\arabic{dtextStart}}{\arabic{dtextEnd}}[\textOver]%
+            \stepcounter{dtextEnd}%
+            \setcounter{dtextStart}{\arabic{dtextEnd}}%
+            \stepcounter{dtextStart}%
+            \ifthenelse{\equal{\arabic{dtextNormal}}{\string 0}}{%
+                % No characters! Just print this one and continue
+            }{%
+                % Add subtext
+                \ifthenelse{\equal{\arabic{dtextSubWord}}{\string 0}}{%
+                    % Handle first case
+                    \StrCut[1]{#2}{ }{\textUnder}{\rightpart}%
+                }{%
+                    % Handle last case
+                    \ifthenelse{\equal{\arabic{dtextSubWord}}{\dtextSpaces}}{%
+                        % IF ALL LAST .... then wont be caught...
+                        \StrCut[\arabic{dtextSubWord}]{#2}{ }{\leftpart}{\textUnder}%
+                    }{% Handle middle case
+                        \setcounter{dtextSubWordPlusOne}{\arabic{dtextSubWord} + 1}%
+                        \StrBetween[\arabic{dtextSubWord},\arabic{dtextSubWordPlusOne}]{#2}{ }{ }[\textUnder]%
+                    }%
+                }%
+                % Handle ignore
+                \ifthenelse{\equal{\textUnder}{\string -}}{%
+                    \text{\textOver}%
+                }{%
+                    $\underset{\jping{\textUnder}}{\text{\textOver}}$%
+                }%
+                % \text{[\textUnder][\textOver][\dtextChar]}
+                \stepcounter{dtextSubWord}%
+                \setcounter{dtextNormal}{0}%
+            }%
+            % Enable wrapping with stupid spaces...
+            \ifthenelse{\equal{\dtextChar}{ }}{%
+                \text{} %
+            }{%
+                \text{\dtextChar}%
+            }%
+        }{%
+            % Not end of word
+            \stepcounter{dtextEnd}%
+            \stepcounter{dtextNormal}%
+            % Handle last not being special
+            \ifthenelse{\equal{\arabic{dtextIndex}}{\dtextLength}}{%
+                % End of word
+                \StrMid{#1}{\arabic{dtextStart}}{\arabic{dtextEnd}}[\textOver]%
+                \stepcounter{dtextEnd}%
+                \setcounter{dtextStart}{\arabic{dtextEnd}}%
+                \stepcounter{dtextStart}%
+                % Special case of single word
+                \ifthenelse{\equal{\arabic{dtextSubWord}}{\string 0}}{%
+                    % FIXME: lazy...
+                    \StrMid{#2}{0}{9999}[\textUnder]%
+                }{%
+                    \StrCut[\arabic{dtextSubWord}]{#2}{ }{\leftpart}{\textUnder}%
+                }%
+                % Handle ignore
+                \ifthenelse{\equal{\textUnder}{\string -}}{%
+                    \text{\textOver}%
+                }{%
+                    $\underset{\jping{\textUnder}}{\text{\textOver}}$%
+                }%
+            }{%
+            }%
+        }%
+    }%
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Create two column, auto numbered classroom phrases, ie
+% \classroomPhrases{
+%   {而家踏幾呀}{ready yet}
+%   {而家踏幾呀}{ready yet}
+%   {\dtext{而家踏幾呀}{ji4 gaa1 daap3 gei2 aa3}}{ready yet}
+% }
+%
+% @param array of tuples
+\newcommand*{\classroomPhrases}[1]{%
+    \setcounter{classroomPhraseCounter}{1}
+    \relax
+    \renewcommand{\arraystretch}{2}
+    \begin{tabularx}{\linewidth}{l X l X}
+    \classroomPhrase#1\relax\relax
+    \end{tabularx}
+    \renewcommand{\arraystretch}{1}
+}
+\newcounter{classroomPhraseCounter}
+% Helper method for classroomPhrases
+\newcommand{\classroomPhrase}[2]{%
+    \ifx\relax#1\\\empty%
+    \else%
+    \noindent\arabic{classroomPhraseCounter}. & #1 & \arabic{classroomPhraseCounter}. & #2\\\relax%
+    \stepcounter{classroomPhraseCounter}%
+    \expandafter\classroomPhrase%
+    \fi%
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Create three column, auto numbered vocabulary list, ie
+% \vocabularyChecklist{
+%   {A}{ex}{oh}
+%   {Chahn}{sur}{Chan}
+%   {deimyjhyu}{ph}{Excuse me; I beg your pardon; I'm sorry}
+%   {而家踏幾呀}{abc}{ready yet}
+% }
+%
+% @param array of triples
+\newcommand*{\vocabularyChecklist}[1]{%
+    \setcounter{vocabularyChecklistCounter}{1}
+    \relax
+    \begin{tabular}{l r l}
+    \vocabularyEntry#1\relax\relax\relax
+    \end{tabular}
+}
+\newcounter{vocabularyChecklistCounter}
+% Helper method for vocabularyChecklist
+\newcommand{\vocabularyEntry}[3]{%
+    \ifx\relax#1\\\empty%
+    \else%
+    \arabic{vocabularyChecklistCounter}. #1 & #2: & #3\\\relax%
+    \stepcounter{vocabularyChecklistCounter}%
+    \expandafter\vocabularyEntry%
+    \fi%
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Create three column, auto numbered drill list, ie
+%
+% @param
+\newcommand*{\drillExample}[1]{%
+    Ex:
+    \relax%
+    \begin{center}
+    \begin{tabular}{l l l l}
+    \drillExampleEntry#1\relax\relax\relax\relax\relax
+    \end{tabular}
+    \end{center}
+}
+% Helper method for drillExample
+\newcommand{\drillExampleEntry}[5]{%
+    \ifx\relax#1\\\empty%
+    \else%
+        #1: & #2 & #1: & #4\\\relax%
+        \StrLen{#3#5}[\dDrillExplanationLength]%
+        \ifthenelse{\equal{\dDrillExplanationLength}{\string 0}}{%
+        % Nothing
+        }{%Else
+            & (#3) & & (#5)\\\relax%
+        }%
+    \expandafter\drillExampleEntry%
+    \fi%
+}
+
+\newcommand*{\drills}[1]{%
+    \setcounter{drillEntryCounter}{1}%
+    \relax%
+    \begin{tabularx}{\linewidth}{l X l X}
+    \drillEntry#1\relax\relax\relax\relax
+    \end{tabularx}
+}
+% Helper method for drills
+\newcounter{drillEntryCounter}
+\newcommand{\drillEntry}[4]{%
+    \ifx\relax#1\\\empty%
+    \else%
+        \arabic{drillEntryCounter}. & #1: & \arabic{drillEntryCounter}. & #3\\\relax%
+        \StrLen{#2#4}[\dDrillEntryExplanationLength]%
+        \ifthenelse{\equal{\dDrillEntryExplanationLength}{\string 0}}{%
+        % Nothing
+        }{%Else
+            & #2 & & #4\\\relax%
+        }%
+        \stepcounter{drillEntryCounter}%
+    \expandafter\drillEntry%
+    \fi%
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Create an audio tag
+%
+% @param tape side A/B
+% @param timestamp in 0:00 format
+\newcommand{\audioTag}[2]{%
+    #1 $\triangleright$ #2%
+}%
+
+\newcommand{\subsText}[1]{%
+    /#1/%
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Create a converstation
+% NOTE: does not use simple nested stuff, due to ifthenelse and multicolumn
+% errors on omit
+%
+% \conversation{
+%   %
+%   \cdline{(At the beginning of class in the morning)}
+%   %
+%   \caline{\dtext{學生}{hok6saang1}}{student}
+%   %
+%   \cspeaker{\dtext{學生}{hok6saang1}}
+%   \cbline{\dtext{何}{ho4}}{Ho, surname}
+%   \cbline{\dtext{生}{saang1}}{Mr.}
+%   \cbline{\dtext{何 生}{ho4 saang1}}{Mr. Ho}
+%   \cbline{\dtext{早晨}{zou2san4}}{good morning}
+%   \cvline{\dtext{何 生 早晨}{ho4 saang1 zou2san4}}{Good morning, Mr. Ho.}
+%   \caline{\dtext{先生}{sin1saang1}}{teacher}
+%   %
+%   \cspeaker{\dtext{先生}{sin1saang1}}
+%   \cbline{\dtext{李}{lei5}}{Lee, surname}
+%   \cbline{\dtext{太}{taai2}}{Mrs.}
+%   \cbline{\dtext{李 太}{lei5 taai2}}{Mrs. Lee}
+%   \cvline{\dtext{李 太 早晨。}{lei5 taai2 zou2san4}}{Good morning, Mrs. Lee.}
+%   %
+%   \cdline{(At the end of the day, the students are leaving class.)}
+%   %
+% }
+% @param table rows
+\newcommand*{\conversation}[1]{%
+    \relax
+    \renewcommand{\arraystretch}{2}
+    \begin{tabularx}{\linewidth}{X X}
+    #1\relax\relax
+    \end{tabularx}
+    \renewcommand{\arraystretch}{1}
+}
+
+% A line for a speaker change
+%
+% @param speaker name
+\newcommand{\cspeaker}[1]{%
+    \multicolumn{2}{c}{\textbf{\underline{#1}}} \\%
+}%
+
+% A line for a double width row (background information)
+%
+% @param text
+\newcommand{\cdline}[1]{%
+    \multicolumn{2}{c}{#1} \\%
+}%
+
+% Buildup line
+%
+% @param left right
+\newcommand{\cbline}[2]{%
+    \indent #1 & \indent #2\\%
+}%
+
+% Full conversation line after a buildup
+%
+% @param left right
+\newcommand{\cvline}[2]{%
+    #1 & #2\\%
+}%
+
+% Additional conversation line (i.e. word explanation)
+%
+% @param left right
+\newcommand{\caline}[2]{%
+    \indent #1 & \indent #2\\%
+}%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Translater note
+%
+% @param text
+\newcommand{\tnote}[1]{%
+    \underline{Translation Note}: #1%
+}
+
+% TODO note
+%
+% @param text
+\newcommand{\todo}[1]{%
+    \textbf{\underline{TODO}}: #1%
+}
