@@ -13,6 +13,7 @@
 % \hypersetup{pdftex,colorlinks=true,allcolors=blue}
 % \usepackage{hypcap}
 
+% \usepackage{xcolor}
 \usepackage[]{hyperref}
 \hypersetup{
     pdftitle={FSI Cantonese - new format},
@@ -21,7 +22,9 @@
     bookmarksnumbered=true,
     bookmarksopen=true,
     bookmarksopenlevel=1,
-    % colorlinks=true,
+    colorlinks=true,
+    urlcolor=blue,
+    linkcolor=black,
     pdfstartview=Fit,
     pdfpagemode=UseOutlines,
     pdfpagelayout=TwoPageRight
@@ -30,29 +33,28 @@
 % Make font larger
 \setCJKmainfont[Scale=1.5]{STSong}
 
-% Input custom functions
-\input{functions.tex}
+% Include custom functions
+\include{functions}
 
 \begin{document}
 
 \title{FSI Cantonese - new format}
 \author{Foreign Services Institute}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \maketitle
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \tableofcontents
 
-\newpage
-Translator notes:
-\begin{itemize}
-    \item The original FSI cantonese uses yale romanization with 7 tones. This translation uses jyupting with 6 tones.
-    \item This is a work in progress
-\end{itemize}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Misc notes
+\include{notes}
 
-% Lesson 00
-\input{lessons/00/index.tex}
+% Introduction
+\include{introduction}
 
 % Lesson 01
-\input{lessons/01/index.tex}
+\include{lessons/01/index}
 
 \end{document}
