@@ -194,16 +194,18 @@
 \newcommand*{\vocabularyChecklist}[1]{%
     \setcounter{vocabularyChecklistCounter}{1}
     \relax
-    \begin{tabular}{l r l}
+    \renewcommand{\arraystretch}{2}
+    \begin{tabularx}{\linewidth}{r l r X}
     \vocabularyEntry#1\relax\relax\relax
-    \end{tabular}
+    \end{tabularx}
+    \renewcommand{\arraystretch}{1}
 }
 \newcounter{vocabularyChecklistCounter}
 % Helper method for vocabularyChecklist
 \newcommand{\vocabularyEntry}[3]{%
     \ifx\relax#1\\\empty%
     \else%
-    \arabic{vocabularyChecklistCounter}. #1 & #2: & #3\\\relax%
+    \arabic{vocabularyChecklistCounter}. & #1 & #2: & #3\\\relax%
     \stepcounter{vocabularyChecklistCounter}%
     \expandafter\vocabularyEntry%
     \fi%
@@ -211,56 +213,110 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Create three column, auto numbered drill list, ie
-%
-% @param
+% Create a drill
+% NOTE: does not use simple nested stuff, due to ifthenelse and multicolumn
+% errors on omit
+
+% \drillExample{
+%    \drillExampleEntry {T} {\dtext{李 太，早晨}{lei5 taai2 zou2san4}} {Good morning, Mrs. Lee.}
+%    \drillExampleEntry {S} {\dtext{李 太，再見}{lei5 taai2 zoi3gin3}} {Goodbye, Mrs. Lee.}
+% }
+% \drillExample{
+%    \drillExampleEntrySub {T} {\dtext{李 太，早晨}{lei5 taai2 zou2san4}} {Good morning, Mrs. Lee.} {\dtext{陳}{can4}}
+%    \drillExampleEntry {S} {\dtext{陳 太，再見}{can4 taai2 zoi3gin3}} {Good morning, Mrs. Chan.}
+% }
 \newcommand*{\drillExample}[1]{%
-    Ex:
-    \relax%
-    \begin{center}
-    \begin{tabular}{l l l l}
-    \drillExampleEntry#1\relax\relax\relax\relax\relax
-    \end{tabular}
-    \end{center}
-}
-% Helper method for drillExample
-\newcommand{\drillExampleEntry}[5]{%
-    \ifx\relax#1\\\empty%
-    \else%
-        #1: & #2 & #1: & #4\\\relax%
-        \StrLen{#3#5}[\dDrillExplanationLength]%
-        \ifthenelse{\equal{\dDrillExplanationLength}{\string 0}}{%
-        % Nothing
-        }{%Else
-            & (#3) & & (#5)\\\relax%
-        }%
-    \expandafter\drillExampleEntry%
-    \fi%
+    \begin{minipage}{\linewidth}
+        Ex:
+        \relax
+        \renewcommand{\arraystretch}{2}
+        \begin{tabularx}{\linewidth}{l X l X}
+        #1\relax\relax
+        \end{tabularx}
+        \renewcommand{\arraystretch}{1}
+    \end{minipage}
 }
 
-\newcommand*{\drills}[1]{%
-    \setcounter{drillEntryCounter}{1}%
-    \relax%
-    \begin{tabularx}{\linewidth}{l X l X}
-    \drillEntry#1\relax\relax\relax\relax
+% Example drill entry
+%
+% @param speaker
+% @param left
+% @param right
+\newcommand{\drillExampleEntry}[3]{%
+    #1: & #2 & #1: & #3 \\%
+}%
+
+% Example drill entry translation
+%
+% @param left
+% @param right
+\newcommand{\drillExampleEntryTrans}[2]{%
+    & #1 & & #2 \\%
+}%
+
+% Example drill entry with substitution
+%
+% @param speaker
+% @param left
+% @param right
+% @param substitution
+\newcommand{\drillExampleEntrySub}[4]{%
+    #1. & #2 & #1. & #3 \\%
+    & / #4 / & & \\%
+}%
+
+% \drill{
+%    \drillEntrySub {1} {\dtext{陳 太，早晨}{can4 taai2 zou2san4}} {\dtext{李 太，早晨}{lei5 taai2 zou2san4}} {\dtext{李}{lei5}}
+%    \drillEntry {2} {\dtext{劉 生，早晨}{lau4 saang1 zou2san4}}{\dtext{劉 生，再見} {lau4 saang1 zoi3gin3}}
+%    \drillEntryTrans {Good morning, Mr. Lau.} {}
+% }
+\newcommand*{\drill}[1]{%
+    \renewcommand{\arraystretch}{2}
+    \begin{tabularx}{\linewidth}{l l l l}
+    #1\relax\relax
     \end{tabularx}
+    \renewcommand{\arraystretch}{1}
 }
-% Helper method for drills
-\newcounter{drillEntryCounter}
-\newcommand{\drillEntry}[4]{%
-    \ifx\relax#1\\\empty%
-    \else%
-        \arabic{drillEntryCounter}. & #1: & \arabic{drillEntryCounter}. & #3\\\relax%
-        \StrLen{#2#4}[\dDrillEntryExplanationLength]%
-        \ifthenelse{\equal{\dDrillEntryExplanationLength}{\string 0}}{%
-        % Nothing
-        }{%Else
-            & #2 & & #4\\\relax%
-        }%
-        \stepcounter{drillEntryCounter}%
-    \expandafter\drillEntry%
-    \fi%
+
+% Drill entry
+%
+% @param number
+% @param left
+% @param right
+\newcommand{\drillEntry}[3]{%
+    #1. & #2 & #1. & #3 \\%
+}%
+
+% Drill entry translation
+%
+% @param left
+% @param right
+\newcommand{\drillEntryTrans}[2]{%
+    & #1 & & #2 \\%
+}%
+
+% Drill entry with substitution
+%
+% @param number
+% @param left
+% @param right
+\newcommand{\drillEntrySub}[4]{%
+    #1. & #2 & #1. & #3 \\%
+    & / #4 / & & \\%
+}%
+
+\newcommand*{\convDrill}[1]{%
+    \renewcommand{\arraystretch}{2}
+    \begin{tabularx}{\linewidth}{l l X l l X}
+    #1\relax\relax
+    \end{tabularx}
+    \renewcommand{\arraystretch}{1}
 }
+
+\newcommand{\convDrillEntry}[4]{%
+    \IfSubStr{1234567890}{#1}{#1.}{} & #2: & #3 & \IfSubStr{1234567890}{#1}{#1.}{} & #2: & #4 \\%
+}%
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -284,25 +340,25 @@
 %
 % \conversation{
 %   %
-%   \cdline{(At the beginning of class in the morning)}
+%   \convBackground{(At the beginning of class in the morning)}
 %   %
-%   \caline{\dtext{學生}{hok6saang1}}{student}
+%   \convExplanation{\dtext{學生}{hok6saang1}}{student}
 %   %
 %   \cspeaker{\dtext{學生}{hok6saang1}}
 %   \cbline{\dtext{何}{ho4}}{Ho, surname}
 %   \cbline{\dtext{生}{saang1}}{Mr.}
 %   \cbline{\dtext{何 生}{ho4 saang1}}{Mr. Ho}
 %   \cbline{\dtext{早晨}{zou2san4}}{good morning}
-%   \cvline{\dtext{何 生 早晨}{ho4 saang1 zou2san4}}{Good morning, Mr. Ho.}
-%   \caline{\dtext{先生}{sin1saang1}}{teacher}
+%   \cfline{\dtext{何 生 早晨}{ho4 saang1 zou2san4}}{Good morning, Mr. Ho.}
+%   \convExplanation{\dtext{先生}{sin1saang1}}{teacher}
 %   %
 %   \cspeaker{\dtext{先生}{sin1saang1}}
 %   \cbline{\dtext{李}{lei5}}{Lee, surname}
 %   \cbline{\dtext{太}{taai2}}{Mrs.}
 %   \cbline{\dtext{李 太}{lei5 taai2}}{Mrs. Lee}
-%   \cvline{\dtext{李 太 早晨。}{lei5 taai2 zou2san4}}{Good morning, Mrs. Lee.}
+%   \cfline{\dtext{李 太 早晨。}{lei5 taai2 zou2san4}}{Good morning, Mrs. Lee.}
 %   %
-%   \cdline{(At the end of the day, the students are leaving class.)}
+%   \convBackground{(At the end of the day, the students are leaving class.)}
 %   %
 % }
 % @param table rows
@@ -325,7 +381,7 @@
 % A line for a double width row (background information)
 %
 % @param text
-\newcommand{\cdline}[1]{%
+\newcommand{\convBackground}[1]{%
     \multicolumn{2}{c}{#1} \\%
 }%
 
@@ -339,14 +395,14 @@
 % Full conversation line after a buildup
 %
 % @param left right
-\newcommand{\cvline}[2]{%
+\newcommand{\cfline}[2]{%
     #1 & #2\\%
 }%
 
 % Additional conversation line (i.e. word explanation)
 %
 % @param left right
-\newcommand{\caline}[2]{%
+\newcommand{\convExplanation}[2]{%
     \indent #1 & \indent #2\\%
 }%
 

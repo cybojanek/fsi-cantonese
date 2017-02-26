@@ -1,3 +1,5 @@
+.PHONY: all clean
+
 all: textbook.pdf
 
 textbook.pdf: textbook.tex functions.tex notes.tex $(wildcard lessons/*/*.tex)
