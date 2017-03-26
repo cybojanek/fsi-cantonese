@@ -81,7 +81,7 @@
         \StrChar{#1}{\arabic{dtextIndex}}[\dtextChar]%
         % If special, then handle
         % https://en.wikipedia.org/wiki/Chinese_punctuation
-        \IfSubStr{ 。「」﹁﹂"、‧《》〈〉﹏…——～,?;，!}{\dtextChar}{%
+        \IfSubStr{； 。「」﹁﹂"、‧《》〈〉﹏…——～,?;，!-}{\dtextChar}{%
             % End of word
             \StrMid{#1}{\arabic{dtextStart}}{\arabic{dtextEnd}}[\textOver]%
             \stepcounter{dtextEnd}%
@@ -230,7 +230,7 @@
         Ex:
         \relax
         \renewcommand{\arraystretch}{2}
-        \begin{tabularx}{\linewidth}{l X l X}
+        \begin{tabularx}{\linewidth}{l X | l X}
         #1\relax\relax
         \end{tabularx}
         \renewcommand{\arraystretch}{1}
@@ -272,7 +272,7 @@
 % }
 \newcommand*{\drill}[1]{%
     \renewcommand{\arraystretch}{2}
-    \begin{tabularx}{\linewidth}{l l l l}
+    \begin{tabularx}{\linewidth}{l l | l l}
     #1\relax\relax
     \end{tabularx}
     \renewcommand{\arraystretch}{1}
@@ -307,7 +307,7 @@
 
 \newcommand*{\convDrill}[1]{%
     \renewcommand{\arraystretch}{2}
-    \begin{tabularx}{\linewidth}{l l X l l X}
+    \begin{tabularx}{\linewidth}{l l X | l l X}
     #1\relax\relax
     \end{tabularx}
     \renewcommand{\arraystretch}{1}
@@ -365,7 +365,7 @@
 \newcommand*{\conversation}[1]{%
     \relax
     \renewcommand{\arraystretch}{2}
-    \begin{tabularx}{\linewidth}{X X}
+    \begin{tabularx}{\linewidth}{X | X}
     #1\relax\relax
     \end{tabularx}
     \renewcommand{\arraystretch}{1}
