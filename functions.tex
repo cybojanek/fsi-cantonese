@@ -81,7 +81,7 @@
         \StrChar{#1}{\arabic{dtextIndex}}[\dtextChar]%
         % If special, then handle
         % https://en.wikipedia.org/wiki/Chinese_punctuation
-        \IfSubStr{； 。「」﹁﹂"、‧《》〈〉﹏…——～,?;，!-}{\dtextChar}{%
+        \IfSubStr{； 。「」﹁﹂"、‧《》〈〉﹏…——～,?;，!-？}{\dtextChar}{%
             % End of word
             \StrMid{#1}{\arabic{dtextStart}}{\arabic{dtextEnd}}[\textOver]%
             \stepcounter{dtextEnd}%
@@ -164,7 +164,7 @@
     \setcounter{classroomPhraseCounter}{1}
     \relax
     \renewcommand{\arraystretch}{2}
-    \begin{tabularx}{\linewidth}{l X l X}
+    \noindent\begin{tabularx}{\linewidth}{l X l X}
     \classroomPhrase#1\relax\relax
     \end{tabularx}
     \renewcommand{\arraystretch}{1}
@@ -195,7 +195,7 @@
     \setcounter{vocabularyChecklistCounter}{1}
     \relax
     \renewcommand{\arraystretch}{2}
-    \begin{tabularx}{\linewidth}{r l r X}
+    \noindent\begin{tabularx}{\linewidth}{r l r X}
     \vocabularyEntry#1\relax\relax\relax
     \end{tabularx}
     \renewcommand{\arraystretch}{1}
@@ -230,7 +230,7 @@
         Ex:
         \relax
         \renewcommand{\arraystretch}{2}
-        \begin{tabularx}{\linewidth}{l X | l X}
+        \noindent\begin{tabularx}{\linewidth}{l X | l X}
         #1\relax\relax
         \end{tabularx}
         \renewcommand{\arraystretch}{1}
@@ -272,7 +272,7 @@
 % }
 \newcommand*{\drill}[1]{%
     \renewcommand{\arraystretch}{2}
-    \begin{tabularx}{\linewidth}{l l | l l}
+    \noindent\begin{tabularx}{\linewidth}{l l | l l}
     #1\relax\relax
     \end{tabularx}
     \renewcommand{\arraystretch}{1}
@@ -284,7 +284,7 @@
 % @param left
 % @param right
 \newcommand{\drillEntry}[3]{%
-    #1. & #2 & #1. & #3 \\%
+    \IfSubStr{1234567890}{#1}{#1.}{} & #2 & \IfSubStr{1234567890}{#1}{#1.}{} & #3 \\%
 }%
 
 % Drill entry translation
@@ -307,7 +307,7 @@
 
 \newcommand*{\convDrill}[1]{%
     \renewcommand{\arraystretch}{2}
-    \begin{tabularx}{\linewidth}{l l X | l l X}
+    \noindent\begin{tabularx}{\linewidth}{l l X | l l X}
     #1\relax\relax
     \end{tabularx}
     \renewcommand{\arraystretch}{1}
@@ -365,7 +365,7 @@
 \newcommand*{\conversation}[1]{%
     \relax
     \renewcommand{\arraystretch}{2}
-    \begin{tabularx}{\linewidth}{X | X}
+    \noindent\begin{tabularx}{\linewidth}{X | X}
     #1\relax\relax
     \end{tabularx}
     \renewcommand{\arraystretch}{1}
@@ -404,6 +404,19 @@
 % @param left right
 \newcommand{\convExplanation}[2]{%
     \indent #1 & \indent #2\\%
+}%
+
+\newcommand*{\listeningConversation}[1]{%
+    \relax
+    \renewcommand{\arraystretch}{2}
+    \noindent\begin{tabularx}{\linewidth}{l l}
+    #1\relax\relax
+    \end{tabularx}
+    \renewcommand{\arraystretch}{1}
+}
+
+\newcommand{\lcEntry}[2]{%
+    #1: & #2\\%
 }%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
