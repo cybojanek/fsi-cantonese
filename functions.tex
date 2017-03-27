@@ -150,6 +150,11 @@
     }%
 }
 
+\newcommand*{\atext}[1]{%
+\immediate\write18{./atext.py #1 > temp.dat}%
+\input{temp.dat}%
+}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Create two column, auto numbered classroom phrases, ie
